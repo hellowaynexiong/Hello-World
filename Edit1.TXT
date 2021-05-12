@@ -1,7 +1,25 @@
-1. BT固件升级，使用UART。升级时间，固件大小
-3. 遥控器需要一直连接BT。
-4. 研究github使用
-5. BT BLE接收遥控器按键命令传输给MCU，遥控器需要提供BLE命令和格式，是否支持组合按键，组合按键的实现。
-6. 屏幕显示的定义
-7. BLE的遥控器配对
-8. 工厂测试模式
+int User_Set_PIN_Power_Down(int ModuleID, int PinID)
+{
+	int Pin_Num = -1;
+	int iResPin = 0;
+
+	Pin_Num = Pinmux_ModulePin_Find(ModuleID, PinID);
+
+	if (Pin_Num == -1)
+	{
+		LOGE("ModuleID %d : PinID %d  Find Fail !\n", ModuleID, PinID);
+		return -1;
+	}
+
+	Pinmux_GPIO_Free(Pin_Num);
+	iResPin |= Pinmux_GPIO_Alloc(Pin_Num, IO_GPIO, IO_RISC);
+	iResPin |= GPIO_OE_Set(Pin_Num, IO_OUTPUT);
+	iResPin |= GPIO_Output_Write(Pin_Num, IO_LOW);
+
+	if (iResPin != 0)
+	{
+		LOGE("ModuleID %d : PinID %d disable Fail !\n", ModuleID, PinID);
+		return -1;
+	}
+	return 0;
+}
